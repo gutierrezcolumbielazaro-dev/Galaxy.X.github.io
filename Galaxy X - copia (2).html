@@ -1,0 +1,955 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Galaxy X</title>
+  <meta name="description" content="Galaxy X — Soluciones de software. Productos, presencia en Discord y diseño elegante." />
+  <meta name="theme-color" content="#1a001a" />
+  <style>
+    :root{
+      --bg-1: #24002a; /* intensified */
+      --bg-2: #480043; /* intensified */
+      --accent-galaxy: #d55bd9;
+      --accent-2: #ff69b4;
+      --muted: #cfc9d3;
+      --card-bg: rgba(255,255,255,0.03);
+      --panel-border: rgba(255,255,255,0.22);
+      --illumin-white: rgba(255,255,255,0.88);
+      --btn-red: linear-gradient(180deg,#ff3b3b,#c01b1b);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg-1),var(--bg-2));color:var(--muted);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none}
+    .page{position:relative;min-height:100vh;overflow-x:hidden;padding-top:110px}
+    #particles-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block}
+
+    /* Top bar */
+    header.sitebar{position:fixed;top:0;left:0;right:0;z-index:120;display:flex;align-items:center;justify-content:space-between;padding:18px 36px;backdrop-filter: blur(6px);transition:top .28s ease, background-color .28s linear}
+    .logo-small{display:flex;align-items:center;gap:12px}
+    .logo-small img{height:44px;display:block}
+    nav.topnav a{margin-left:18px;color:var(--muted);font-weight:700}
+
+    /* HERO - updated to keep title large and avoid clipping */
+    .hero{
+      position:relative;
+      z-index:5;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      text-align:center;
+      padding:40px 20px 80px;
+      min-height:540px;
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
+      overflow: visible !important; /* ensure large title isn't clipped */
+    }
+    .hero::after{
+      content:"";
+      position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.38),rgba(0,0,0,0.58));z-index:1;
+      pointer-events:none;
+    }
+    .hero-inner{position:relative;z-index:2;max-width:1100px;padding:12px}
+
+    /* Logo positioned above the title (absolute) so it doesn't push the title */
+    .brand-logo {
+      position: absolute;
+      top: 72px; /* sitúa el logo por debajo de la barra fija */
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1200; /* encima del header (header z-index:600) */
+      pointer-events: none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+    }
+    /* Single centered fixed logo: will be positioned below the header via JS */
+    .hero-center-logo{position:fixed;top:0;left:50%;transform:translateX(-50%);display:flex;justify-content:center;align-items:center;pointer-events:none;z-index:5000;width:auto;margin:0}
+
+    /* Glow outline behind the logo: subtle pink-only glow (no white center) */
+    .hero-center-logo::before{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+      width:340px;
+      height:340px;
+      border-radius:18px;
+      background: radial-gradient(circle at center, rgba(213,91,217,0.18) 0%, rgba(213,91,217,0.12) 30%, rgba(213,91,217,0.06) 60%, transparent 80%);
+      filter: blur(10px);
+      z-index:4998;
+      pointer-events:none;
+      opacity:0.78;
+    }
+
+    .hero-center-logo img{width:300px;max-width:36%;height:auto;border-radius:14px;filter:drop-shadow(0 20px 48px rgba(213,91,217,0.18));animation:floatLogo 5.5s ease-in-out infinite;box-shadow:0 0 18px rgba(213,91,217,0.36), 0 12px 32px rgba(213,91,217,0.14)}
+
+    @media (max-width:900px){
+      .hero-center-logo::before{width:240px;height:240px;filter:blur(8px)}
+      .hero-center-logo img{width:200px;max-width:44%}
+    }
+    @media (max-width:520px){
+      .hero-center-logo::before{width:160px;height:160px;filter:blur(6px)}
+      .hero-center-logo img{width:140px;max-width:56%}
+    }
+    @keyframes floatLogo{0%{transform:translateY(0)}50%{transform:translateY(-10px)}100%{transform:translateY(0)}}
+    .brand-logo img{
+      height: auto;
+      max-height: 220px; /* you can increase this if you want it even larger */
+      width: auto;
+      display:block;
+      filter: drop-shadow(0 18px 36px rgba(213,91,217,0.18));
+      border-radius:12px;
+    }
+    /* (Removed textual fallback - use image fallbacks instead) */
+
+    /* Keep the title large as you requested */
+    .welcome {
+      font-size: 110px !important; /* preserved large size per your request */
+      font-weight:900;
+      margin: 14px 0 0 0;
+      line-height:0.88;
+      color:#fff;
+      letter-spacing:-1px;
+      text-shadow: 0 12px 36px rgba(0,0,0,0.7);
+      display:block;
+      max-width:100%;
+      word-break:break-word;
+    }
+    .welcome .accent {
+      background: linear-gradient(90deg, #ff2b2b, #d55bd9, #ffb86b, #2bd9ff, #9bff6b);
+      background-size: 400% 400%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 10px 34px rgba(213,91,217,0.12);
+      animation: gradientShift 6s linear infinite;
+    }
+
+    @keyframes gradientShift {
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+
+    .subtitle {
+      margin-top:18px;
+      color:#fff;
+      font-weight:900;
+      font-size:26px;
+      letter-spacing:0.6px;
+      text-transform:uppercase;
+      text-shadow: 0 10px 28px rgba(0,0,0,0.6);
+    }
+    .subtitle .danger {
+      display:block;
+      margin-top:6px;
+      color: var(--btn-red);
+      font-size:28px;
+      letter-spacing:0.6px;
+      text-transform:uppercase;
+      font-weight:900;
+      text-shadow: 0 10px 30px rgba(255,43,43,0.12);
+    }
+
+    .hero-cta { margin-top:28px; display:flex;gap:14px;justify-content:center;flex-wrap:wrap; }
+    .btn {
+      padding:14px 22px;border-radius:12px;font-weight:900;font-size:16px;cursor:pointer;border:0;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.5);
+    }
+    .btn.primary { background: var(--btn-red); color:white; }
+    .btn.ghost {
+      background: transparent;
+      color: white;
+      border:1px solid rgba(255,255,255,0.14);
+      padding:12px 20px;
+    }
+
+    @media (max-width:980px){
+      .welcome{font-size:68px !important}
+      .subtitle{font-size:18px}
+      .brand-logo img{max-height:160px}
+    }
+    @media (max-width:540px){
+      .welcome{font-size:34px !important}
+      .subtitle{font-size:14px}
+      .hero{min-height:420px;padding-bottom:40px}
+      .brand-logo img{max-height:120px}
+    }
+
+    /* Metrics */
+    .metrics-grid { max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;gap:28px;padding:28px 20px;z-index:5;position:relative; }
+    .metrics-grid .metric { background: transparent; border-radius:12px; padding:22px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; }
+    .metric-icon { display:block; margin-bottom:6px; filter: drop-shadow(0 12px 28px rgba(255,43,43,0.12)); }
+    .metric-svg { stroke: #ff2b2b; }
+    .metric-number { font-size:56px; font-weight:900; margin-top:6px; color:#fff; text-shadow:0 16px 40px rgba(255,43,43,0.18); }
+    .metric-label { color:#bfb8bf; margin-top:8px; font-size:0.95rem; text-align:center; max-width:260px; }
+
+    @media (max-width:880px){ .metrics-grid { flex-direction:column; gap:18px; padding:12px; } .metric-number{font-size:40px} }
+
+    /* Products */
+    section#productos { padding:72px 28px 160px; position:relative; z-index:5; }
+    .products-grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:28px; align-items:start; justify-items:center; max-width:1200px; margin:0 auto; }
+    .product-card { width:100%; border-radius:14px; overflow:hidden; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.28)); border:1px solid rgba(255,255,255,0.04); box-shadow: 0 20px 50px rgba(0,0,0,0.65); display:flex;flex-direction:column;align-items:stretch; }
+    .product-media { height:420px; background-size:cover; background-position:center; }
+    .product-body { padding:20px; display:flex;flex-direction:column;gap:12px; align-items:center; }
+    .product-title { font-size:28px; font-weight:900; color:#fff; letter-spacing:-0.5px; }
+    .product-desc { color:var(--muted); text-align:center; font-size:0.95rem; }
+    .product-actions { margin-top:6px; display:flex;gap:12px; align-items:center; justify-content:center; width:100% }
+    .btn-primary { padding:12px 18px;border-radius:10px;background:linear-gradient(180deg,var(--accent-galaxy),var(--accent-2)); color:white;font-weight:800;border:none;cursor:pointer; text-decoration:none; box-shadow:0 14px 40px rgba(213,91,217,0.12); }
+    .btn-outline { padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);color:var(--muted);background:transparent;text-decoration:none; }
+
+    footer{padding:60px 20px 120px;text-align:center;color:var(--muted);z-index:5}
+    /* Site footer (purple top line like screenshot) */
+    .site-footer{background:#050505;color:var(--muted);padding:48px 20px;border-top:4px solid var(--accent-galaxy);}
+    .site-footer .wrapper{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 200px 220px;gap:28px;align-items:start}
+    .site-footer h3{color:#fff;font-size:20px;margin:0 0 8px;font-weight:900}
+    .site-footer .brand-foot{font-size:20px;font-weight:900;color:var(--accent-galaxy);}
+    .site-footer .brand-plain{color:#fff;font-weight:900}
+    .site-footer .links a{display:block;color:var(--muted);margin:8px 0;text-decoration:none}
+    .site-footer .socials{display:flex;gap:12px;align-items:center}
+    .site-footer .socials a{display:inline-flex;align-items:center;justify-content:center;padding:6px 12px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:#fff;font-weight:700;text-decoration:none;transition:all .18s ease}
+    .site-footer .socials a:hover{transform:translateY(-2px)}
+    .site-footer .socials a{--glow-color:rgba(213,91,217,0.45)}
+    .site-footer .socials a.glow{box-shadow:0 8px 40px var(--glow-color,rgba(213,91,217,0.18));text-shadow:0 0 10px var(--glow-color,rgba(213,91,217,0.45));border-color:var(--glow-color)}
+
+    /* Global page glow for hovered elements */
+    .page-glow{transition:box-shadow .16s ease, text-shadow .16s ease, transform .12s ease !important}
+    .page-glow.glow{box-shadow:0 12px 60px var(--glow-color,rgba(213,91,217,0.18));text-shadow:0 0 12px var(--glow-color,rgba(213,91,217,0.45));border-color:var(--glow-color) !important;transform:translateY(-2px)}
+    .site-footer .copyright{border-top:1px solid rgba(255,255,255,0.03);margin-top:18px;padding-top:14px;color:rgba(255,255,255,0.52);font-size:13px;text-align:center}
+    /* Contact overlay styles (match provided design) */
+    .contact-panel{background:linear-gradient(180deg,rgba(30,0,30,0.95),rgba(48,0,47,0.96));padding:26px;border-radius:12px;box-shadow:0 24px 60px rgba(0,0,0,0.6);position:relative}
+    .contact-panel h2{color:#fff;font-size:28px;margin:0;font-weight:900}
+    .contact-panel p{color:var(--muted);margin-top:10px;margin-bottom:18px}
+    .contact-row{display:flex;gap:14px;align-items:flex-start}
+    .contact-input{flex:1;padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:rgba(0,0,0,0.28);color:var(--muted)}
+    .contact-textarea{flex:2;min-height:84px;padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:rgba(0,0,0,0.28);color:var(--muted);resize:vertical}
+    .contact-cta-wrapper{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+    .contact-phone-badge{background:rgba(255,255,255,0.04);color:#cfe8ff;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);font-weight:700}
+    .btn-wa{background:linear-gradient(180deg,#2d9cff,#2563eb);color:#fff;border:0;padding:12px 20px;border-radius:12px;font-weight:900;cursor:pointer;box-shadow:0 12px 36px rgba(37,99,235,0.14)}
+    @media (max-width:900px){ .contact-row{flex-direction:column} .contact-cta-wrapper{align-items:stretch} }
+
+    @media (max-width:1100px){
+      .products-grid{grid-template-columns:repeat(2,1fr)}
+      .product-media{height:340px}
+    }
+    @media (max-width:700px){
+      .products-grid{grid-template-columns:1fr}
+      .product-media{height:260px}
+    }
+    /* Contact section styles (updated: compact + phone visible) */
+      .contact-section{padding:28px 20px;max-width:1180px;margin:32px auto 28px;border-radius:12px;background:linear-gradient(180deg,rgba(30,0,30,0.94),rgba(48,0,47,0.98));box-shadow:0 18px 40px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.02);position:relative;z-index:6}
+    .contact-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+    .contact-top h2{color:#fff;font-size:28px;margin:0;font-weight:900}
+    .contact-top p{color:var(--muted);margin:6px 0 0;max-width:640px;font-size:0.95rem}
+    .contact-phone{color:#cfe8ff;font-weight:700;background:rgba(255,255,255,0.02);padding:8px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);font-size:14px}
+    .contact-form{display:flex;gap:12px;align-items:center;margin-top:16px}
+    .contact-form .col{flex:1;min-width:160px}
+    .contact-form input[type="text"],.contact-form textarea{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:rgba(0,0,0,0.36);color:var(--muted);resize:vertical}
+    .contact-form textarea{min-height:62px}
+    .contact-cta{flex:0 0 220px;display:flex;flex-direction:column;gap:8px;align-items:flex-end}
+    .contact-cta button{background:linear-gradient(180deg,#2d9cff,#2563eb);color:#fff;border:0;padding:14px 26px;border-radius:12px;font-weight:900;cursor:pointer;box-shadow:0 18px 44px rgba(37,99,235,0.14)}
+    .contact-cta a{color:var(--muted);font-size:13px}
+    
+    /* Divider between sections */
+    .section-divider{height:44px;max-width:1200px;margin:12px auto;position:relative}
+    .section-divider::before{content:'';display:block;height:1px;background:linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0.06),rgba(255,255,255,0.02));margin:18px 0;border-radius:1px}
+    .section-divider::after{content:'';width:12px;height:12px;border-radius:2px;background:linear-gradient(180deg,#d55bd9,#9a2db0);position:absolute;left:50%;transform:translateX(-50%);top:16px;box-shadow:0 6px 18px rgba(213,91,217,0.12)}
+    @media (max-width:900px){ .contact-form{flex-direction:column} .contact-cta{align-items:stretch} }
+
+    /* Legal integrated into contact area (transparent background) */
+    .contact-section{padding:28px 20px 40px;max-width:1180px;margin:-36px auto 28px;border-radius:12px;background:linear-gradient(180deg,rgba(30,0,30,0.94),rgba(48,0,47,0.98));box-shadow:0 18px 40px rgba(0,0,0,0.6);border:none;position:relative;z-index:6}
+    .legal-bar{position:relative;background:transparent;color:rgba(255,255,255,0.62);text-align:center;padding:8px 4px;font-size:13px;border-radius:4px;max-width:100%;margin-top:14px;box-shadow:none}
+    /* Floating Discord button */
+    .floating-discord{position:fixed;right:20px;bottom:20px;z-index:140;background:linear-gradient(180deg,#2d9cff,#2563eb);color:#fff;padding:12px 16px;border-radius:14px;font-weight:800;box-shadow:0 10px 30px rgba(37,99,235,0.18);cursor:pointer;display:flex;gap:8px;align-items:center;user-select:none;border:2px solid transparent;transition:box-shadow 260ms ease,border-color 260ms ease,transform 160ms ease}
+    .floating-discord img{width:18px;height:18px;display:block}
+    .floating-discord .badge{font-size:14px}
+    .floating-discord.illuminate{transform:translateY(-2px)}
+    @keyframes discord-glow{0%{box-shadow:0 6px 20px rgba(0,0,0,0.12)}50%{box-shadow:0 12px 50px var(--glow-color,rgba(45,156,255,0.6))}100%{box-shadow:0 8px 30px var(--glow-color,rgba(45,156,255,0.4))}}
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Particles canvas -->
+    <canvas id="particles-canvas" aria-hidden="true"></canvas>
+
+    <!-- Header -->
+    <header class="sitebar">
+      <div class="logo-small">
+        <div style="font-weight:800;color:white;font-size:14px">Galaxy X</div>
+      </div>
+      <nav class="topnav" aria-label="principal">
+        <a href="#inicio">INICIO</a>
+        <a href="#productos" onclick="openProductsOverlay(event)">PRODUCTOS</a>
+        <a href="#contacto" onclick="openContactOverlay(event)">CONTACTO</a>
+      </nav>
+    </header>
+
+    <!-- HERO (logo absolute above title; title kept large) -->
+    <main id="inicio" class="hero" role="main" style="background-image:url('images/bg-custom.jpg');">
+      <!-- single centered logo fixed above the header -->
+      <div class="hero-center-logo" aria-hidden="true">
+        <img src="images/galaxyx-logo-attached.png" alt="Galaxy X central logo" onerror="this.onerror=null;this.src='images/galaxyx-logo-small.png'">
+      </div>
+
+      <div class="hero-inner" role="region" aria-label="Hero content">
+        <h1 class="welcome">Bienvenido a <span class="accent">Galaxy X</span></h1>
+
+        <div class="subtitle" aria-hidden="false">
+          ESPECIALISTAS EN EL DESARROLLO DE SOFTWARES
+          <span class="danger">INDETECTABLES.</span>
+        </div>
+
+        <div class="hero-cta" role="group" aria-label="Acciones principales">
+          <button class="btn primary" type="button" onclick="openProductsOverlay()">Ver Productos</button>
+          <a class="btn ghost" href="#contacto" onclick="openContactOverlay(event)">Saber más</a>
+        </div>
+
+        <!-- Metrics -->
+        <section id="metrics" aria-label="Métricas principales" style="z-index:5;position:relative;margin-top:28px">
+          <div class="metrics-grid" role="list">
+            <!-- Personas -->
+            <div class="metric" role="listitem" aria-labelledby="metric-people-label">
+              <div class="metric-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="56" height="56" aria-hidden="true" focusable="false" class="metric-svg">
+                  <path d="M17 21v-2a4 4 0 0 0-3-3.87M9 21v-2a4 4 0 0 1 3-3.87M12 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="#ff2b2b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+              </div>
+              <div id="metric-people-number" class="metric-number" aria-live="polite">—</div>
+              <div id="metric-people-label" class="metric-label">Miembros en nuestro servidor de Discord</div>
+            </div>
+
+            <!-- 100% Seguro -->
+            <div class="metric" role="listitem" aria-labelledby="metric-secure-label">
+              <div class="metric-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="56" height="56" aria-hidden="true" focusable="false" class="metric-svg">
+                  <path d="M12 2l7 3v5c0 5-3.5 9-7 11-3.5-2-7-6-7-11V5l7-3z" stroke="#ff2b2b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+              </div>
+              <div id="metric-secure-number" class="metric-number">100%</div>
+              <div id="metric-secure-label" class="metric-label">Seguros y Efectivos</div>
+            </div>
+
+            <!-- Clientes activos -->
+            <div class="metric" role="listitem" aria-labelledby="metric-clients-label">
+              <div class="metric-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="56" height="56" aria-hidden="true" focusable="false" class="metric-svg">
+                  <path d="M16 11c1.7 0 3-1.6 3-3.5S17.7 4 16 4s-3 1.6-3 3.5S14.3 11 16 11zM8 11c1.7 0 3-1.6 3-3.5S9.7 4 8 4 5 5.6 5 7.5 6.3 11 8 11zM8 13c-2.7 0-8 1.4-8 4v2h22v-2c0-2.6-5.3-4-8-4z" stroke="#ff2b2b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                </svg>
+              </div>
+              <div id="metric-clients-number" class="metric-number">+100</div>
+              <div id="metric-clients-label" class="metric-label">Clientes Activos</div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Productos disponibles en overlay -->
+
+    <!-- Left side acquire box removed per user request -->
+
+    <!-- Floating side buttons removed -->
+
+    <!-- Original products moved to the section above -->
+
+    <!-- Contact section -->
+    <section id="contacto" class="contact-section" aria-label="Contacto">
+      <div class="contact-top">
+        <div>
+          <h2>Contacto</h2>
+          <p>¿Tienes dudas o quieres adquirir un panel? Escríbenos aquí y te responderemos lo antes posible.</p>
+        </div>
+        <div class="contact-phone">+51 993 022 680</div>
+      </div>
+
+      <form class="contact-form" onsubmit="sendToDiscord(event)">
+        <div class="col">
+          <input type="text" name="name" placeholder="Tu nombre" required />
+        </div>
+        <div class="col">
+          <textarea name="message" placeholder="Tu mensaje" required></textarea>
+        </div>
+        <div class="contact-cta">
+          <input type="hidden" name="discord_user" value="995544090307481650" />
+          <button type="submit">Enviar por WhatsApp</button>
+          <a id="discord-direct" href="https://discord.gg/Hzba9X4RHe" target="_blank" rel="noopener noreferrer">O abre nuestro Discord</a>
+        </div>
+      </form>
+    </section>
+      <!-- Contacto moved to overlay (open with nav or hero). Inline contact removed. -->
+    
+      <!-- Site footer (purple accent) -->
+      <footer class="site-footer">
+        <div class="wrapper">
+          <div>
+            <div style="display:flex;align-items:baseline;gap:8px">
+              <div class="brand-foot">Galaxy X</div>
+            </div>
+            <p style="max-width:420px;margin-top:10px;color:var(--muted)">Tu zona de confianza para soluciones especializadas en desarrollo de softwares indetectables.</p>
+          </div>
+          <div class="links">
+            <h3>ENLACES RÁPIDOS</h3>
+            <a href="#inicio">Inicio</a>
+            <a href="#productos" onclick="openProductsOverlay(event)">Productos</a>
+            <a href="#contacto" onclick="openContactOverlay(event)">Contacto</a>
+          </div>
+          <div>
+            <h3>SÍGUENOS</h3>
+            <div class="socials">
+              <a class="social-link" data-base="white" href="https://discord.gg/Hzba9X4RHe" target="_blank" rel="noopener noreferrer" aria-label="Discord">Discord</a>
+              <a class="social-link" data-base="white" href="https://www.tiktok.com/@osogame11?_r=1&_t=ZS-92EFomIA1Lg" id="tiktok-link" target="_blank" rel="noopener noreferrer" aria-label="TikTok">TikTok</a>
+              <a class="social-link" data-base="red" href="https://www.youtube.com/@GALAXYX.oficial" id="youtube-link" target="_blank" rel="noopener noreferrer" aria-label="YouTube">YouTube</a>
+              <a class="social-link" data-base="white" href="https://wa.me/51993022680" id="whatsapp-link" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">WhatsApp</a>
+            </div>
+          </div>
+        </div>
+        <div class="copyright" id="footer-copyright">© Galaxy X 2025. Todos los derechos reservados.</div>
+      </footer>
+
+      <!-- Floating Discord box -->
+      <div id="floating-discord" class="floating-discord" role="button" aria-label="Discord" tabindex="0">
+        <img src="images/discord-icon-white.png" alt="" onerror="this.style.display='none'">
+        <span class="badge">Únete a Discord</span>
+      </div>
+
+
+    <script>
+    /* Products overlay control: opens a fixed overlay and can return to inicio */
+    function openProductsOverlay(e){
+      if(e && e.preventDefault) e.preventDefault();
+      let overlay = document.getElementById('productos-overlay');
+      if(!overlay){
+        overlay = document.createElement('section');
+        overlay.id = 'productos-overlay';
+        overlay.setAttribute('aria-label','Productos (pantalla completa)');
+        overlay.style.cssText = 'display:none;position:fixed;inset:0;z-index:120;background:linear-gradient(180deg,rgba(10,4,10,0.98),rgba(20,6,20,0.98));overflow:auto;padding:28px;';
+        overlay.innerHTML = `
+          <div style="max-width:1200px;margin:28px auto;color:var(--muted);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+              <h2 style="color:#fff;font-size:32px;font-weight:900;margin:0">Productos</h2>
+              <div style="display:flex;gap:12px;align-items:center">
+                <button id="volver-inicio" type="button" onclick="closeProductsOverlay(); document.getElementById('inicio')?.scrollIntoView({behavior:'smooth'});" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:8px 12px;border-radius:8px;cursor:pointer">Volver al inicio</button>
+              </div>
+            </div>
+            <div class="products-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:28px;">
+              <article class="product-card" aria-labelledby="p1-title">
+                <div class="product-media" style="height:320px;background-image:url('images/product-1.jpg');background-size:cover;background-position:center"></div>
+                <div class="product-body">
+                  <div id="p1-title" class="product-title">PANEL BASIC</div>
+                  <div class="product-desc">Acceso básico con funciones esenciales, estable y ligero.</div>
+                  <div class="product-actions">
+                    <a class="btn-primary" href="#comprar-1">Adquirir producto</a>
+                    <a class="btn-outline" href="#more-1">Más info</a>
+                  </div>
+                </div>
+              </article>
+
+              <article class="product-card" aria-labelledby="p2-title">
+                <div class="product-media" style="height:320px;background-image:url('images/product-2.jpg');background-size:cover;background-position:center"></div>
+                <div class="product-body">
+                  <div id="p2-title" class="product-title">Bypass UID</div>
+                  <div class="product-desc">Funciones avanzadas y mayor compatibilidad con sistemas modernos.</div>
+                  <div class="product-actions">
+                    <a class="btn-primary" href="#comprar-2">Adquirir producto</a>
+                    <a class="btn-outline" href="#more-2">Más info</a>
+                  </div>
+                </div>
+              </article>
+
+              <article class="product-card" aria-labelledby="p3-title">
+                <div class="product-media" style="height:320px;background-image:url('images/panel-supreme.jpg');background-size:cover;background-position:center"></div>
+                <div class="product-body">
+                  <div id="p3-title" class="product-title">PANEL SUPREME</div>
+                  <div class="product-desc">Suite completa con soporte premium y actualizaciones exclusivas.</div>
+                  <div class="product-actions">
+                    <a class="btn-primary" href="#comprar-3">Adquirir producto</a>
+                    <a class="btn-outline" href="#more-3">Más info</a>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+        overlay.querySelector('#volver-inicio').addEventListener('click', function(){ closeProductsOverlay(); document.getElementById('inicio')?.scrollIntoView({behavior:'smooth'}); });
+      }
+      overlay.style.display = 'block';
+      document.querySelector('.page')?.setAttribute('aria-hidden','true');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeProductsOverlay(returnToInicio = true){
+      const overlay = document.getElementById('productos-overlay');
+      if(overlay) overlay.style.display = 'none';
+      document.querySelector('.page')?.removeAttribute('aria-hidden');
+      document.body.style.overflow = '';
+      // optionally return focus/scroll to inicio
+      if(returnToInicio){
+        const inicio = document.getElementById('inicio');
+        if(inicio) inicio.scrollIntoView({behavior:'smooth'});
+      }
+    }
+
+    /* Contact overlay control: similar to products overlay */
+    function openContactOverlay(e){
+      if(e && e.preventDefault) e.preventDefault();
+      let overlay = document.getElementById('contacto-overlay');
+      if(!overlay){
+        overlay = document.createElement('section');
+        overlay.id = 'contacto-overlay';
+        overlay.setAttribute('aria-label','Contacto (pantalla completa)');
+        overlay.style.cssText = 'display:none;position:fixed;inset:0;z-index:120;background:linear-gradient(180deg,rgba(10,4,10,0.98),rgba(20,6,20,0.98));overflow:auto;padding:28px;';
+        overlay.innerHTML = `
+          <div style="max-width:1100px;margin:28px auto;color:var(--muted);">
+            <div class="contact-panel">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <div>
+                  <h2>Contacto</h2>
+                  <p>¿Tienes dudas o quieres adquirir un panel? Escríbenos aquí y te responderemos lo antes posible.</p>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:12px">
+                  <div class="contact-phone-badge">+51 993 022 680</div>
+                  <button id="volver-inicio-contact" type="button" onclick="closeContactOverlay(true); document.getElementById('inicio')?.scrollIntoView({behavior:'smooth'});" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:8px 12px;border-radius:8px;cursor:pointer">Volver al inicio</button>
+                  <div style="font-size:12px;color:var(--muted)"></div>
+                </div>
+              </div>
+
+              <form class="contact-form" onsubmit="sendToDiscord(event)" style="margin-top:18px;display:flex;gap:12px;align-items:center">
+                <input class="contact-input" type="text" name="name" placeholder="Tu nombre" required />
+                <textarea class="contact-textarea" name="message" placeholder="Tu mensaje" required></textarea>
+                <div class="contact-cta-wrapper">
+                  <input type="hidden" name="discord_user" value="995544090307481650" />
+                  <button class="btn-wa" type="submit">Enviar por WhatsApp</button>
+                  <a href="https://discord.gg/Hzba9X4RHe" target="_blank" rel="noopener noreferrer" style="color:var(--muted);font-size:13px;margin-top:8px">O abre nuestro Discord</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(overlay);
+        // wire close and volver buttons if they exist (older markup)
+        if(overlay.querySelector('#cerrar-contacto')) overlay.querySelector('#cerrar-contacto').addEventListener('click', function(){ closeContactOverlay(true); });
+        if(overlay.querySelector('#volver-inicio-contact')) overlay.querySelector('#volver-inicio-contact').addEventListener('click', function(){ closeContactOverlay(true); document.getElementById('inicio')?.scrollIntoView({behavior:'smooth'}); });
+        // ensure the submit button inside dynamically created panel dispatches to the form
+        overlay.addEventListener('submit', function(evt){ if(evt.target && evt.target.matches('form')) sendToDiscord(evt); }, true);
+      }
+      overlay.style.display = 'block';
+      document.querySelector('.page')?.setAttribute('aria-hidden','true');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeContactOverlay(returnToInicio = false){
+      const overlay = document.getElementById('contacto-overlay');
+      if(overlay) overlay.style.display = 'none';
+      document.querySelector('.page')?.removeAttribute('aria-hidden');
+      document.body.style.overflow = '';
+      if(returnToInicio){ const inicio = document.getElementById('inicio'); if(inicio) inicio.scrollIntoView({behavior:'smooth'}); }
+    }
+
+    /* Floating Discord highlight behavior */
+    (function(){
+      const FLOAT = document.getElementById('floating-discord');
+      const DISCORD_URL = 'https://discord.gg/Hzba9X4RHe';
+      if(FLOAT){
+        FLOAT.addEventListener('click', ()=> window.open(DISCORD_URL, '_blank'));
+        FLOAT.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); window.open(DISCORD_URL, '_blank'); }});
+      }
+
+      function illuminateWith(color){
+        if(!FLOAT) return;
+        FLOAT.style.setProperty('--glow-color', color);
+        FLOAT.classList.add('illuminate');
+        // subtle border + glow
+        FLOAT.style.boxShadow = `0 12px 50px ${color}`;
+        FLOAT.style.borderColor = color;
+        setTimeout(()=>{
+          if(FLOAT){ FLOAT.classList.remove('illuminate'); FLOAT.style.boxShadow = ''; FLOAT.style.borderColor = 'transparent'; }
+        }, 900);
+      }
+
+      // Retro-illumination for social links and other marked elements
+      document.addEventListener('DOMContentLoaded', function(){
+        const socialGlowMap = { red: 'rgba(0,0,0,0.9)', white: 'rgba(213,91,217,0.6)' };
+        document.querySelectorAll('.social-link, .socials a').forEach(el => {
+          const base = el.getAttribute('data-base') || 'white';
+          const glow = socialGlowMap[base] || 'rgba(213,91,217,0.45)';
+          el.addEventListener('mouseenter', ()=>{ el.style.setProperty('--glow-color', glow); el.classList.add('glow'); });
+          el.addEventListener('mouseleave', ()=>{ el.classList.remove('glow'); });
+          el.addEventListener('focus', ()=>{ el.style.setProperty('--glow-color', glow); el.classList.add('glow'); });
+          el.addEventListener('blur', ()=>{ el.classList.remove('glow'); });
+        });
+      
+        // limit retro-illumination to textual elements and form fields only
+        const glowMap = { red: '#000000', white: 'rgba(213,91,217,1)' };
+        const selectors = 'p, a, span, h1, h2, h3, h4, h5, h6, li, label, button, .contact-input, .contact-textarea, .product-title, .product-desc, .brand-foot, .welcome .accent';
+        const elems = Array.from(document.querySelectorAll(selectors));
+
+        function pickGlowColorForText(el){
+          const cs = getComputedStyle(el).color || '';
+          const m = cs.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+          if(m){ const r=+m[1], g=+m[2], b=+m[3];
+            if(r>230 && g>230 && b>230) return glowMap.white; // white-ish -> pink
+            if(r>180 && g<90 && b<90) return glowMap.red; // red-ish -> black
+            return `rgba(${Math.min(255,r+70)},${Math.min(255,g+70)},${Math.min(255,b+70)},1)`;
+          }
+          return glowMap.white;
+        }
+
+        elems.forEach(el => {
+          // skip hidden elements
+          if(el.offsetWidth === 0 && el.offsetHeight === 0) return;
+          el.addEventListener('mouseenter', ()=>{
+            if(el.dataset.origColor === undefined) el.dataset.origColor = getComputedStyle(el).color;
+            const newColor = pickGlowColorForText(el);
+            if(el.tagName.toLowerCase() === 'input' || el.tagName.toLowerCase() === 'textarea' || el.classList.contains('contact-input') || el.classList.contains('contact-textarea')){
+              el.style.borderColor = newColor;
+              el.style.color = newColor;
+            } else {
+              el.style.color = newColor;
+            }
+          });
+          el.addEventListener('mouseleave', ()=>{
+            if(el.dataset.origColor !== undefined){ el.style.color = el.dataset.origColor; delete el.dataset.origColor; }
+            if(el.tagName.toLowerCase() === 'input' || el.tagName.toLowerCase() === 'textarea'){
+              el.style.borderColor = '';
+            }
+          });
+          el.addEventListener('focus', ()=>{ el.dispatchEvent(new Event('mouseenter')); });
+          el.addEventListener('blur', ()=>{ el.dispatchEvent(new Event('mouseleave')); });
+        });
+      });
+
+      function illuminateHover(color){
+        if(!FLOAT) return;
+        FLOAT.style.setProperty('--glow-color', color);
+        FLOAT.classList.add('illuminate');
+        FLOAT.style.boxShadow = `0 14px 60px ${color}`;
+        FLOAT.style.borderColor = color;
+      }
+
+      function clearHover(){
+        if(!FLOAT) return;
+        FLOAT.classList.remove('illuminate');
+        FLOAT.style.boxShadow = '';
+        FLOAT.style.borderColor = 'transparent';
+      }
+
+      // Clicks still produce a short illuminate animation
+      document.addEventListener('click', function(ev){
+        const target = ev.target.closest('a,button');
+        if(!target) return;
+        if(target.id === 'floating-discord' || target.closest('#floating-discord')) return;
+        const dataColor = target.dataset && target.dataset.color;
+        let color = dataColor || window.getComputedStyle(target).backgroundColor || window.getComputedStyle(target).color || '';
+        if(color) illuminateWith(color);
+      });
+
+      // Hover highlights: show while pointer is over a control
+      document.addEventListener('mouseover', function(ev){
+        const target = ev.target.closest('a,button');
+        if(!target) return;
+        if(target.id === 'floating-discord' || target.closest('#floating-discord')) return;
+        const dataColor = target.dataset && target.dataset.color;
+        const color = dataColor || window.getComputedStyle(target).backgroundColor || window.getComputedStyle(target).color || '';
+        if(color) illuminateHover(color);
+      });
+
+      document.addEventListener('mouseout', function(ev){
+        const target = ev.target.closest('a,button');
+        if(!target) return;
+        if(target.id === 'floating-discord' || target.closest('#floating-discord')) return;
+        clearHover();
+      });
+    })();
+
+    /* Redirect product actions to contact */
+    (function(){
+      document.addEventListener('click', function(ev){
+        const btn = ev.target.closest('a[href^="#comprar-"], a[href^="#more-"], .product-card .btn-primary, .product-card .btn-outline');
+        if(!btn) return;
+        // ignore if user explicitly clicked contact or floating discord
+        if(btn.closest('#floating-discord') || btn.closest('#contacto')) return;
+        ev.preventDefault();
+        const contacto = document.getElementById('contacto');
+        if(contacto){
+          // close products overlay then open contact overlay
+          try{ closeProductsOverlay(false); }catch(e){}
+          setTimeout(()=>{
+            openContactOverlay();
+            setTimeout(()=>{ const over = document.getElementById('contacto-overlay'); const i = over?.querySelector('input[name="name"]'); if(i) i.focus(); }, 320);
+          }, 240);
+        } else {
+          try{ closeProductsOverlay(false); }catch(e){}
+          openContactOverlay();
+        }
+      });
+    })();
+
+    /* Discord invite count (client-side) - updates metric-people-number */
+    (function(){
+      const invite = 'Hzba9X4RHe';
+      const el = document.getElementById('metric-people-number');
+
+      async function updateDiscordCount(){
+        try {
+          const res = await fetch(`https://discord.com/api/invites/${invite}?with_counts=true`);
+          if (!res.ok) throw new Error('Discord API ' + res.status);
+          const data = await res.json();
+          // siempre mostrar el total de miembros (approximate_member_count)
+          const total = data.approximate_member_count ?? null;
+          if (total !== null && el) el.textContent = total.toLocaleString();
+          else if (el) el.textContent = '—';
+        } catch (err) {
+          console.warn('No se pudo obtener conteo de Discord:', err);
+          if (el) el.textContent = '—';
+        }
+      }
+
+      updateDiscordCount();
+      // actualizar cada 10 segundos
+      setInterval(updateDiscordCount, 10000);
+    })();
+
+    /* Contact form handler: open WhatsApp with prefilled message and copy to clipboard */
+    function sendToDiscord(e){
+      e.preventDefault();
+      const form = (e.target && e.target.matches && e.target.matches('form')) ? e.target : (e.target.form || document.querySelector('.contact-form'));
+      const name = (form && form.querySelector('input[name="name"]')||{}).value || '';
+      const message = (form && form.querySelector('textarea[name="message"]')||{}).value || '';
+
+      const WHATSAPP_NUMBER = '51993022680';
+
+      const text = `Contacto desde sitio — Nombre: ${name}\nMensaje: ${message}`;
+      const waUrl = WHATSAPP_NUMBER && WHATSAPP_NUMBER !== 'REPLACE_WITH_WHATSAPP_NUMBER'
+        ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`
+        : `https://wa.me/?text=${encodeURIComponent(text)}`;
+
+      // try to copy to clipboard (best-effort)
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(()=>{});
+      }
+
+      // redirect the current tab to WhatsApp so the user can send the message
+      try{
+        window.location.href = waUrl;
+      }catch(err){
+        // fallback: open new tab
+        window.open(waUrl, '_blank');
+      }
+    }
+
+    /* Diamond particles (white) + galaxy lines */
+    (function(){
+      const canvas = document.getElementById('particles-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d', { alpha: true });
+
+      const CFG = {
+        minParticles: 30,
+        maxParticles: 160,
+        speed: 0.28,
+        neighborCount: 3,
+        lineRatio: 0.18,
+        diamondSize: { min: 2.2, max: 4.2 },
+        glow: 10,
+        galaxyLineColor: 'rgba(213,91,217,0.16)',
+        diamondColor: 'rgba(255,255,255,1)',
+        reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      };
+
+      let DPR = Math.max(1, window.devicePixelRatio || 1);
+      let W = 0, H = 0, particles = [], raf = null;
+      const rand = (a,b) => Math.random() * (b-a) + a;
+
+      function resize(){
+        DPR = Math.max(1, window.devicePixelRatio || 1);
+        W = Math.max(320, window.innerWidth);
+        H = Math.max(240, window.innerHeight);
+        canvas.width = Math.round(W * DPR);
+        canvas.height = Math.round(H * DPR);
+        canvas.style.width = W + 'px';
+        canvas.style.height = H + 'px';
+        ctx.setTransform(DPR,0,0,DPR,0,0);
+        init();
+      }
+
+      function computeCount(){
+        const area = W * H;
+        const base = Math.round(area / 90000);
+        return Math.max(CFG.minParticles, Math.min(CFG.maxParticles, base));
+      }
+
+      function init(){
+        const count = computeCount();
+        particles = new Array(count);
+        for (let i=0;i<count;i++){
+          particles[i] = {
+            x: rand(0, W),
+            y: rand(0, H),
+            vx: rand(-CFG.speed, CFG.speed),
+            vy: rand(-CFG.speed, CFG.speed),
+            s: rand(CFG.diamondSize.min, CFG.diamondSize.max)
+          };
+        }
+      }
+
+      function findNeighbors(i){
+        const a = particles[i];
+        const arr = [];
+        for (let j=0;j<particles.length;j++){
+          if (i === j) continue;
+          const b = particles[j];
+          const dx = a.x - b.x, dy = a.y - b.y;
+          const d2 = dx*dx + dy*dy;
+          arr.push({ idx: j, d2 });
+        }
+        arr.sort((u,v)=>u.d2 - v.d2);
+        return arr.slice(0, CFG.neighborCount);
+      }
+
+      function drawDiamond(x, y, size, fillStyle, glow){
+        ctx.save();
+        if (glow) {
+          ctx.shadowBlur = glow;
+          ctx.shadowColor = 'rgba(255,255,255,0.18)';
+        }
+        ctx.beginPath();
+        ctx.moveTo(x, y - size);
+        ctx.lineTo(x + size, y);
+        ctx.lineTo(x, y + size);
+        ctx.lineTo(x - size, y);
+        ctx.closePath();
+        ctx.fillStyle = fillStyle;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.restore();
+      }
+
+      function draw(){
+        ctx.clearRect(0,0,W,H);
+        const minDim = Math.min(W, H);
+        const lineMax = Math.max(70, minDim * CFG.lineRatio);
+
+        for (let i=0;i<particles.length;i++){
+          const a = particles[i];
+          const neigh = findNeighbors(i);
+          for (let k=0;k<neigh.length;k++){
+            const b = particles[neigh[k].idx];
+            const dist = Math.sqrt(neigh[k].d2);
+            if (dist > lineMax) continue;
+            const alpha = 0.18 * (1 - dist / lineMax);
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = `rgba(213,91,217,${alpha * 0.9})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+
+        for (let i=0;i<particles.length;i++){
+          const a = particles[i];
+          const neigh = findNeighbors(i);
+          if (neigh.length < 2) continue;
+          const b = particles[neigh[0].idx], c = particles[neigh[1].idx];
+          const dAvg = Math.sqrt(neigh[0].d2) + Math.sqrt(neigh[1].d2);
+          const maxTri = lineMax * 0.75;
+          if (Math.sqrt(neigh[0].d2) < maxTri && Math.sqrt(neigh[1].d2) < maxTri) {
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.lineTo(c.x, c.y);
+            ctx.closePath();
+            ctx.fillStyle = `rgba(213,91,217,${0.004 + (1 - (dAvg/(maxTri*2))) * 0.012})`;
+            ctx.fill();
+          }
+        }
+
+        for (const p of particles) {
+          drawDiamond(p.x, p.y, p.s, CFG.diamondColor, CFG.glow);
+        }
+      }
+
+      function step(){
+        if (CFG.reducedMotion) { draw(); return; }
+        for (const p of particles) {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < -40) p.x = W + 40;
+          if (p.x > W + 40) p.x = -40;
+          if (p.y < -40) p.y = H + 40;
+          if (p.y > H + 40) p.y = -40;
+        }
+        draw();
+        raf = requestAnimationFrame(step);
+      }
+
+      window.addEventListener('resize', ()=>{ clearTimeout(window._diamondResize); window._diamondResize = setTimeout(resize, 120); });
+      resize();
+      step();
+      window.addEventListener('beforeunload', ()=>{ if (raf) cancelAnimationFrame(raf); });
+    })();
+
+    /* Ensure Clients metric shows +300 */
+    document.addEventListener('DOMContentLoaded', function(){
+      try{ const el = document.getElementById('metric-clients-number'); if(el) el.textContent = '+300'; }catch(e){}
+    });
+
+    // Ensure no inline contact panel remains visible on load
+    document.addEventListener('DOMContentLoaded', function(){
+      try{
+        const inline = document.getElementById('contacto'); if(inline) inline.remove();
+        const overlay = document.getElementById('contacto-overlay'); if(overlay) overlay.style.display = 'none';
+      }catch(e){}
+    });
+
+    // Header scroll behavior: the top bar slides down as you scroll (max offset)
+    (function(){
+      const header = document.querySelector('header.sitebar');
+      const logo = document.querySelector('.hero-center-logo');
+      if(!header) return;
+      const MAX = 24; // maximum scroll offset considered
+      const MOVE_FACTOR = 0.32; // header moves a fraction of the scroll so it stays near top (slightly increased)
+      let rafId = null;
+
+      function updateBasePosition(){
+        const h = header.getBoundingClientRect().height || 64;
+        // place logo slightly below header
+        const base = Math.round(h + 8);
+        // store base for scroll calculations
+        window.__logoBaseTop = base;
+        if(logo) logo.style.top = base + 'px';
+        header.style.top = '0px';
+      }
+
+      function onScroll(){
+        if(rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(()=>{
+          const y = Math.min(window.scrollY, MAX) * MOVE_FACTOR; // px to move
+          header.style.top = `${y}px`;
+          if(logo){
+            const base = window.__logoBaseTop || (header.getBoundingClientRect().height + 8);
+            logo.style.top = `${base + y}px`;
+          }
+        });
+      }
+
+      // initialize and keep updated on resize
+      updateBasePosition();
+      let resizeTimer = null;
+      window.addEventListener('resize', ()=>{ clearTimeout(resizeTimer); resizeTimer = setTimeout(updateBasePosition, 120); });
+      window.addEventListener('scroll', onScroll, {passive:true});
+    })();
+
+    
+    </script>
+  </body>
+  </html>
